@@ -779,6 +779,8 @@ class Calculations:
 
         This function checks if the target node, determined by the balancing logic,
         has enough CPU, memory, and disk resources available to accommodate the guest.
+        It also performs a predictive check to ensure the target node will not exceed
+        configured thresholds after the migration (Predictive Scheduling / DRS-like).
 
         Args:
             proxlb_data (Dict[str, Any]): A dictionary containing the complete ProxLB state including:
@@ -787,11 +789,12 @@ class Calculations:
                 - "meta": Dictionary with balancing information including target node
             guest_name (str): The name of the guest to validate resources for
         Returns:
-            bool: True if the target node has sufficient resources, False otherwise
+            bool: True if the target node has sufficient resources and will not be overloaded, False otherwise
         """
         logger.debug("Starting: validate_node_resources.")
         node_target = proxlb_data["meta"]["balancing"]["balance_next_node"]
 
+        # Step 1: check if VM fits et all 
         node_memory_free = proxlb_data["nodes"][node_target]["memory_free"]
         node_cpu_free = proxlb_data["nodes"][node_target]["cpu_free"]
         node_disk_free = proxlb_data["nodes"][node_target]["disk_free"]
@@ -800,14 +803,51 @@ class Calculations:
         guest_cpu_required = proxlb_data["guests"][guest_name]["cpu_used"]
         guest_disk_required = proxlb_data["guests"][guest_name]["disk_used"]
 
-        if guest_memory_required < node_memory_free:
-            logger.debug(f"Node '{node_target}' has sufficient resources ({node_memory_free / (1024 ** 3):.2f} GB free) for guest '{guest_name}'.")
-            logger.debug("Finished: validate_node_resources.")
-            return True
-        else:
+        if guest_memory_required > node_memory_free:
             logger.debug(f"Node '{node_target}' lacks sufficient resources ({node_memory_free / (1024 ** 3):.2f} GB free) for guest '{guest_name}'.")
-            logger.debug("Finished: validate_node_resources.")
             return False
+
+        # Step 2: check against configured thresholds to see if the host gets overloaded by the VM
+        method = proxlb_data["meta"]["balancing"].get("method", "memory")
+        mode = proxlb_data["meta"]["balancing"].get("mode", "used")
+        threshold = proxlb_data["meta"]["balancing"].get(f"{method}_threshold")
+
+        # Skip predictive check for PSI mode as it cannot be easily summed up
+        if threshold and mode != "psi":
+            try:
+                # Determine which metrics to check based on the balancing method
+                if method == "memory":
+                    current_val = proxlb_data["nodes"][node_target][f"memory_{mode}"]
+                    guest_val = proxlb_data["guests"][guest_name]["memory_total"] if mode == "assigned" else proxlb_data["guests"][guest_name]["memory_used"]
+                    total_val = proxlb_data["nodes"][node_target]["memory_total"]
+                elif method == "cpu":
+                    current_val = proxlb_data["nodes"][node_target][f"cpu_{mode}"]
+                    guest_val = proxlb_data["guests"][guest_name]["cpu_total"] if mode == "assigned" else proxlb_data["guests"][guest_name]["cpu_used"]
+                    total_val = proxlb_data["nodes"][node_target]["cpu_total"]
+                elif method == "disk":
+                    current_val = proxlb_data["nodes"][node_target][f"disk_{mode}"]
+                    guest_val = proxlb_data["guests"][guest_name]["disk_total"] if mode == "assigned" else proxlb_data["guests"][guest_name]["disk_used"]
+                    total_val = proxlb_data["nodes"][node_target]["disk_total"]
+                else:
+                    # Fallback for unknown methods
+                    current_val = None
+
+                if current_val is not None and total_val > 0:
+                    projected_usage = current_val + guest_val
+                    projected_percent = (projected_usage / total_val) * 100
+
+                    if projected_percent > threshold:
+                        logger.warning(f"Predictive Check: Skipping migration of {guest_name} to {node_target}. Projected {method} usage ({projected_percent:.2f}%) exceeds threshold of {threshold}%.")
+                        return False
+                    else:
+                        logger.debug(f"Predictive Check: OK. Projected {method} usage on {node_target} is {projected_percent:.2f}% (Threshold: {threshold}%).")
+
+            except KeyError as e:
+                logger.error(f"Predictive Check failed due to missing key: {e}. Proceeding with standard check.")
+
+        logger.debug(f"Node '{node_target}' has sufficient resources ({node_memory_free / (1024 ** 3):.2f} GB free) for guest '{guest_name}'.")
+        logger.debug("Finished: validate_node_resources.")
+        return True
 
     @staticmethod
     def recalc_node_statistics(proxlb_data: Dict[str, Any], node_name: str) -> None:
