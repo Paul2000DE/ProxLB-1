@@ -794,7 +794,7 @@ class Calculations:
         logger.debug("Starting: validate_node_resources.")
         node_target = proxlb_data["meta"]["balancing"]["balance_next_node"]
 
-        # Step 1: check if VM fits et all 
+        # Step 1: check if VM fits et all
         node_memory_free = proxlb_data["nodes"][node_target]["memory_free"]
         node_cpu_free = proxlb_data["nodes"][node_target]["cpu_free"]
         node_disk_free = proxlb_data["nodes"][node_target]["disk_free"]
