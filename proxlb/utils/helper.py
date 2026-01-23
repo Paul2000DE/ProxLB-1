@@ -27,13 +27,16 @@ class RuntimeSignals:
     reload = Event()
     stop = Event()
 
+
 class ProxLBStop(Exception):
     """Raised when ProxLB should stop execution cleanly."""
     pass
 
+
 class ProxLBConfigError(Exception):
     """Raised when configuration is invalid."""
     pass
+
 
 class Helper:
     """

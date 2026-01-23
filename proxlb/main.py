@@ -79,7 +79,6 @@ def main():
                 logger.set_log_level(proxlb_config.get('service', {}).get('log_level', 'INFO'))
                 RuntimeSignals.reload.clear()
 
-
             # Get all required objects from the Proxmox cluster
             meta = {"meta": proxlb_config}
             nodes = Nodes.get_nodes(proxmox_api, proxlb_config)
