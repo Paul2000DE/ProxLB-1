@@ -9,6 +9,9 @@ LABEL org.label-schema.vendor="gyptazy"
 LABEL org.label-schema.url="https://proxlb.de"
 LABEL org.label-schema.vcs-url="https://github.com/gyptazy/ProxLB"
 
+# ENV
+ENV PYTHONUNBUFFERED=1
+
 # --- Step 1 (root): system deps, user, dirs ---
 RUN apk add --no-cache python3 py3-pip \
   && addgroup -S plb \
