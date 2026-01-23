@@ -23,6 +23,7 @@ from threading import Event
 
 logger = SystemdLogger()
 
+
 class RuntimeSignals:
     reload = Event()
     stop = Event()
