@@ -576,7 +576,8 @@ class Calculations:
                 logger.debug(f"Guest '{guest_name}' has non-strict node relationships defined. Prefering nodes in the relationship list for pinning.")
                 Calculations.get_most_free_node(proxlb_data)
                 most_free_node = proxlb_data["meta"]["balancing"]["balance_next_node"]
-                guest_node_relation_list.append(most_free_node)
+                if most_free_node:
+                    guest_node_relation_list.append(most_free_node)
 
             # Get the most free node from the relationship list, or the most free node overall
             Calculations.get_most_free_node(proxlb_data, False, guest_node_relation_list)
