@@ -614,7 +614,8 @@ class Calculations:
         logger.debug("Starting: update_node_resources.")
         guest_name = proxlb_data["meta"]["balancing"]["balance_next_guest"]
 
-        if guest_name == "":
+        # with fix #24 an empty guest name will be None, but maybe there are still cases with empty strings
+        if not guest_name or guest_name == "":
             logger.debug("No guest defined to update node resources for.")
             return
 
