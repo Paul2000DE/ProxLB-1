@@ -44,5 +44,3 @@ def test_min_usage_with_empty_nodes() -> None:
 
     assert node is None, "Expected None when no nodes are available."
     assert proxlb_data["meta"]["balancing"]["balance_next_node"] is None, "Expected balance_next_node to be None."
-
-    

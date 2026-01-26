@@ -13,7 +13,6 @@ import pytest
 from models.calculations import Calculations
 
 
-
 def test_min_usage_with_empty_nodes() -> None:
     """
     Test the case where there are no nodes available (empty nodes dict).
@@ -30,7 +29,6 @@ def test_min_usage_with_empty_nodes() -> None:
     Calculations.update_node_resources(proxlb_data)
 
     assert proxlb_data == proxlb_data_verify, "Proxlb data should not be modified when no nodes are available."
-
 
 
 def test_min_usage_with_no_suitable_nodes() -> None:
