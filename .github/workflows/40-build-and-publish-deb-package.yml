@@ -1,0 +1,72 @@
+name: Build and Trigger Publish
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEBEMAIL: "ci@credativ.de"
+      DEBFULLNAME: "CI Bot"
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Build Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y debhelper dh-make devscripts git-buildpackage build-essential dh-python python3-all
+
+    - name: Configure Git for GBP
+      run: |
+        git config user.name "CI Bot"
+        git config user.email "ci@credativ.de"
+
+    - name: Determine Build Mode
+      id: mode
+      run: |
+        if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          echo "Build mode: STABLE"
+          echo "snapshot=false" >> $GITHUB_OUTPUT
+        else
+          echo "Build mode: SNAPSHOT"
+          echo "snapshot=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update Changelog (Snapshot Only)
+      if: steps.mode.outputs.snapshot == 'true' && github.event_name != 'pull_request'
+      run: |
+        gbp dch --ignore-branch --snapshot --auto --git-author
+
+    - name: Build Package
+      run: |
+        rm -f ../*.deb ../*.changes ../*.buildinfo
+        dpkg-buildpackage -us -uc -b
+        
+        # Move artifacts to workspace directory
+        mkdir -p dist
+        mv ../*.deb dist/
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: debian-package
+        path: dist/*.deb
+        retention-days: 1
+
+    - name: Trigger Private Publish Workflow
+      # Only trigger on Push/Tag, never on Pull Request!
+      if: github.event_name != 'pull_request'
+      run: |
+        echo "Triggering publish workflow in proxtools-infra..."
+        curl -f -X POST https://api.github.com/repos/credativ/proxtools-infra/dispatches \
+        -H 'Accept: application/vnd.github.v3+json' \
+        -H 'Authorization: token ${{ secrets.INFRA_ACCESS_TOKEN }}' \
+        -d '{"event_type": "publish-request", "client_payload": {"repo": "${{ github.repository }}", "run_id": "${{ github.run_id }}", "ref": "${{ github.ref }}"}}'
