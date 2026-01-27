@@ -298,6 +298,7 @@ The following options can be set in the configuration file `proxlb.yaml`:
 |  | max_job_validation |  | 1800 | `Int` | How long a job validation may take in seconds. (default: 1800) |
 |  | balanciness |  | 10 | `Int` | The maximum delta of resource usage between node with highest and lowest usage. |
 |  | memory_threshold |  | 75 | `Int` | The maximum threshold (in percent) that needs to be hit to perform balancing actions. (Optional) |
+|  | cpu_threshold |  | 75 | `Int` | The maximum threshold (in percent) that needs to be hit to perform balancing actions. (Optional) |
 |  | method |  | memory | `Str` | The balancing method that should be used.  [values: `memory` (default), `cpu`, `disk`]|
 |  | mode |  | used | `Str` | The balancing mode that should be used. [values: `used` (default), `assigned`, `psi` (pressure)] |
 |  | balance_larger_guests_first |  | False | `Bool` | Option to prefer larger/smaller guests first |
@@ -347,6 +348,7 @@ balancing:
   balance_types: ['vm', 'ct']
   max_job_validation: 1800
   memory_threshold: 75
+  #cpu_threshold: 75
   balanciness: 5
   method: memory
   mode: used
