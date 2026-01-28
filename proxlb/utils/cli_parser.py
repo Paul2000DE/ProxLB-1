@@ -9,6 +9,7 @@ __license__ = "GPL-3.0"
 
 import argparse
 import utils.version
+from pathlib import Path
 from utils.logger import SystemdLogger
 
 logger = SystemdLogger()
@@ -43,8 +44,8 @@ class CliParser:
         self.parser.add_argument(
             "-c", "--config",
             help="Path to the configuration file",
-            type=str,
-            required=False
+            type=Path,
+            default=Path('/etc/proxlb/proxlb.yaml'),
         )
         self.parser.add_argument(
             "-d", "--dry-run",
