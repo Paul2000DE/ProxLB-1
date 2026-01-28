@@ -467,7 +467,10 @@ class Calculations:
                         break
 
                     if not Calculations.validate_node_resources(proxlb_data, guest_name):
-                        logger.warning(f"Skipping relocation of guest {guest_name} due to insufficient resources on target node {proxlb_data['meta']['balancing']['balance_next_node']}. This might affect affinity group {group_name}.")
+                        if proxlb_data['meta']['balancing'].get('balance_next_node', None) is None:
+                            logger.warning(f"Skipping relocation of guest {guest_name} due to no target node defined. This might affect affinity group {group_name}.")
+                        else:
+                            logger.warning(f"Skipping relocation of guest {guest_name} due to insufficient resources on target node {proxlb_data['meta']['balancing']['balance_next_node']}. This might affect affinity group {group_name}.")
                         continue
 
                     if mode == 'psi':
@@ -831,9 +834,14 @@ class Calculations:
             guest_name (str): The name of the guest to validate resources for
         Returns:
             bool: True if the target node has sufficient resources, False otherwise
+                  or if there is no target node defined.
         """
         logger.debug("Starting: validate_node_resources.")
         node_target = proxlb_data["meta"]["balancing"]["balance_next_node"]
+
+        if node_target is None:
+            logger.debug(f"No target node defined to validate node resources for guest {guest_name}.")
+            return False
 
         node_memory_free = proxlb_data["nodes"][node_target]["memory_free"]
         node_cpu_free = proxlb_data["nodes"][node_target]["cpu_free"]

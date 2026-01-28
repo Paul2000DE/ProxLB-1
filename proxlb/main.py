@@ -93,24 +93,26 @@ def main():
         Helper.log_node_metrics(proxlb_data, init=False)
         Calculations.set_node_hot(proxlb_data)
         Calculations.set_guest_hot(proxlb_data)
-        Calculations.get_most_free_node(proxlb_data, cli_args.best_node)
-        Calculations.validate_affinity_map(proxlb_data)
-        Calculations.relocate_guests_on_maintenance_nodes(proxlb_data)
-        Calculations.get_balanciness(proxlb_data)
-        Calculations.relocate_guests(proxlb_data)
-        Helper.log_node_metrics(proxlb_data, init=False)
+        target = Calculations.get_most_free_node(proxlb_data, cli_args.best_node)
+        if target is None:
+            logger.warning("No suitable target node found for balancing. Skipping this run.")
+        else:
+            Calculations.validate_affinity_map(proxlb_data)
+            Calculations.relocate_guests_on_maintenance_nodes(proxlb_data)
+            Calculations.get_balanciness(proxlb_data)
+            Calculations.relocate_guests(proxlb_data)
+            Helper.log_node_metrics(proxlb_data, init=False)
 
-        # Perform balancing actions via Proxmox API
-        if proxlb_data["meta"]["balancing"].get("enable", False):
-            if not cli_args.dry_run:
-                Balancing(proxmox_api, proxlb_data)
+            # Perform balancing actions via Proxmox API
+            if proxlb_data["meta"]["balancing"].get("enable", False):
+                if not cli_args.dry_run:
+                    Balancing(proxmox_api, proxlb_data)
 
         # Validate if the JSON output should be
         # printed to stdout
         Helper.print_json(proxlb_data, cli_args.json)
         # Validate daemon mode
         Helper.get_daemon_mode(proxlb_config)
-
         logger.debug(f"Finished: __main__")
 
 
