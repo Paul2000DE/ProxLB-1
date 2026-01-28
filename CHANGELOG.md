@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.12] - 2026-01-28
+
+### Fixed
+
+- Fix empty list of possible target nodes for balancing resulting in a Python KeyError (@archandha). [#24]
+- Fix PSI based balancing which resulted in a Python KeyError (@gyptazy). [#420]
+- Fix nested pool evaluation which caused ProxLB to crash, caused by the proxmoxer library (@gyptazy). [#31]
+
 ## [1.1.11] - 2026-01-12
 
 ### Added

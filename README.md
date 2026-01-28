@@ -191,6 +191,7 @@ services:
 | Version | Image |
 |------|:------:|
 | latest | cr.gyptazy.com/proxlb/proxlb:latest |
+| v1.1.12 | cr.gyptazy.com/proxlb/proxlb:v1.1.12 |
 | v1.1.11 | cr.gyptazy.com/proxlb/proxlb:v1.1.11 |
 | v1.1.10 | cr.gyptazy.com/proxlb/proxlb:v1.1.10 |
 | v1.1.9.1 | cr.gyptazy.com/proxlb/proxlb:v1.1.9.1 |
@@ -542,20 +543,6 @@ Bugs can be reported via the GitHub issue tracker [here](https://github.com/gypt
 
 ### Contributing
 Feel free to add further documentation, to adjust already existing one or to contribute with code. Please take care about the style guide and naming conventions. You can find more in our [CONTRIBUTING.md](https://github.com/gyptazy/ProxLB/blob/main/CONTRIBUTING.md) file.
-
-### Support
-If you need assistance or have any questions, we offer support through our dedicated [chat room](https://matrix.to/#/#proxlb:gyptazy.com) in Matrix or [Discord](https://discord.gg/JemGu7WbfQ). Join our community for real-time help, advice, and discussions. The Matrix and Discord room are bridged to ensure that the communication is not splitted - so simply feel free to join which fits most to you!
-
-Connect with us in our dedicated chat room for immediate support and live interaction with other users and developers. You can also visit our [GitHub Community](https://github.com/gyptazy/ProxLB/discussions/) to post your queries, share your experiences, and get support from fellow community members and moderators. You may also just open directly an issue [here](https://github.com/gyptazy/ProxLB/issues) on GitHub.
-
-| Support Channel | Link |
-|------|:------:|
-| Matrix | [#proxlb:gyptazy.com](https://matrix.to/#/#proxlb:gyptazy.com) |
-| Discord | [Discord](https://discord.gg/JemGu7WbfQ) |
-| GitHub Community | [GitHub Community](https://github.com/gyptazy/ProxLB/discussions/)
-| GitHub | [ProxLB GitHub](https://github.com/gyptazy/ProxLB/issues) |
-
-**Note:** Please always keep in mind that this is a one-man show project without any further help. This includes coding, testing, packaging and all the infrastructure around it to keep this project up and running.
 
 ### Enterprise-Support
 Running critical infrastructure in an enterprise environment often comes with requirements that go far beyond functionality alone. Enterprises typically expect predictable service levels, defined escalation paths, and guaranteed response times. In many cases, organizations also demand 24x7 support availability to ensure that their systems remain stable and resilient, even under unexpected circumstances.
