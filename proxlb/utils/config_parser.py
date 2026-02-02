@@ -26,6 +26,7 @@ if not PYYAML_PRESENT:
     print("Error: The required library 'pyyaml' is not installed.")
     sys.exit(1)
 
+import yaml  # noqa: F811 # keep for pyright
 
 logger = SystemdLogger()
 

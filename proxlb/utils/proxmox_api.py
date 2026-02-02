@@ -54,6 +54,8 @@ if not REQUESTS_PRESENT:
     sys.exit(1)
 
 import proxmoxer
+import requests  # noqa: F811 # keep for pyright
+import urllib3  # noqa: F811 # keep for pyright
 
 logger = SystemdLogger()
 

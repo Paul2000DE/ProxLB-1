@@ -115,7 +115,7 @@ class Balancing:
 
                         # Just in case we get a new type of guest in the future
                         else:
-                            logger.critical(f"Balancing: Got unexpected guest type: {guest_meta['type']}. Cannot proceed guest: {guest_meta['name']}.")
+                            logger.critical(f"Balancing: Got unexpected guest type: {guest_meta.type}. Cannot proceed guest: {guest_meta.name}.")
                             assert_never(guest_meta.type)
 
                         if job_id:

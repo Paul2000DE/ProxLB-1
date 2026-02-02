@@ -91,7 +91,7 @@ class SystemdLogger:
         # logging is preferred.
         if SYSTEMD_PRESENT:
             # Add a JournalHandler for systemd integration
-            handler = JournalHandler(SYSLOG_IDENTIFIER="ProxLB")
+            handler = JournalHandler(SYSLOG_IDENTIFIER="ProxLB")  # pyright: ignore[reportPossiblyUnboundVariable]
         else:
             # Add a stdout handler as a fallback
             handler = logging.StreamHandler(sys.stdout)
