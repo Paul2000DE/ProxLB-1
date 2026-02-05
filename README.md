@@ -164,7 +164,7 @@ Using the ProxLB container images is straight forward and only requires you to m
 
 ```bash
 # Pull the image
-docker pull cr.gyptazy.com/proxlb/proxlb:latest
+docker pull ghcr.io/credativ/proxlb:latest
 # Download the config
 wget -O proxlb.yaml https://raw.githubusercontent.com/gyptazy/ProxLB/refs/heads/main/config/proxlb_example.yaml
 # Adjust the config to your needs
@@ -178,19 +178,19 @@ docker run -it --rm -v $(pwd)/proxlb.yaml:/etc/proxlb/proxlb.yaml proxlb
 ```bash
 services:
   proxlb:
-    image: cr.gyptazy.com/proxlb/proxlb:latest
+    image: ghcr.io/credativ/proxlb:latest
     container_name: proxlb
     restart: unless-stopped
     volumes:
       - ./proxlb.yaml:/etc/proxlb/proxlb.yaml:ro
 ```
 
-*Note: ProxLB container images are officially only available at cr.proxlb.de and cr.gyptazy.com.*
+*Note: ProxLB container images are officially only available at ghcr.io/credativ/proxlb*
 
 #### Overview of Images
 | Version | Image |
 |------|:------:|
-| latest | cr.gyptazy.com/proxlb/proxlb:latest |
+| latest | ghcr.io/credativ/proxlb:latest |
 | v1.1.12 | cr.gyptazy.com/proxlb/proxlb:v1.1.12 |
 | v1.1.11 | cr.gyptazy.com/proxlb/proxlb:v1.1.11 |
 | v1.1.10 | cr.gyptazy.com/proxlb/proxlb:v1.1.10 |
