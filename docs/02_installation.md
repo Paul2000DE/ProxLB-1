@@ -40,21 +40,39 @@ ProxLB is a powerful and flexible load balancer designed to work across various 
 You can simply use this snippet to install the repository and to install ProxLB on your system.
 
 ```bash
-echo "deb https://repo.gyptazy.com/stable /" > /etc/apt/sources.list.d/proxlb.list
-wget -O /etc/apt/trusted.gpg.d/proxlb.asc https://repo.gyptazy.com/repository.gpg
-apt-get update && apt-get -y install proxlb
-cp /etc/proxlb/proxlb_example.yaml /etc/proxlb/proxlb.yaml
+# Add GPG key
+curl -fsSL https://packages.credativ.com/public/proxtools/public.key \
+  | sudo gpg --dearmor -o /etc/apt/keyrings/proxtools-archive-keyring.gpg
+
+# Add repository
+echo "deb [signed-by=/etc/apt/keyrings/proxtools-archive-keyring.gpg] \
+https://packages.credativ.com/public/proxtools stable main" \
+| sudo tee /etc/apt/sources.list.d/proxlb.list
+
+# Update & install
+sudo apt-get update
+sudo apt-get -y install proxlb
+
+# Copy example config
+sudo cp /etc/proxlb/proxlb_example.yaml /etc/proxlb/proxlb.yaml
+
 # Adjust the config to your needs
-vi /etc/proxlb/proxlb.yaml
-systemctl start proxlb
+sudo vi /etc/proxlb/proxlb.yaml
+
+# Start service
+sudo systemctl start proxlb
+
+# Adjust the config to your needs
+sudo vi /etc/proxlb/proxlb.yaml
+sudo systemctl start proxlb
 ```
 
 Afterwards, ProxLB is running in the background and balances your cluster by your defined balancing method (default: memory).
 
 #### Details
 ProxLB provides two different repositories:
-* https://repo.gyptazy.com/stable (only stable release)
-* https://repo.gyptazy.com/testing (bleeding edge - not recommended)
+* https://packages.credativ.com/public/proxtools stable main
+* https://packages.credativ.com/public/proxtools snapshots main
 
 The repository is signed and the GPG key can be found at:
 * https://repo.gyptazy.com/repository.gpg
@@ -62,53 +80,12 @@ The repository is signed and the GPG key can be found at:
 You can also simply import it by running:
 
 ```
-# KeyID:  17169F23F9F71A14AD49EDADDB51D3EB01824F4C
-# UID:    gyptazy Solutions Repository <contact@gyptazy.com>
-# SHA256: 52c267e6f4ec799d40cdbdb29fa518533ac7942dab557fa4c217a76f90d6b0f3  repository.gpg
+# KeyID:  34C5B9642CD591E5D090A03B062A8A3A410B831D
+# UID:    Proxtools Repository Signer <info@credativ.de>
+# SHA256: 4cb4a74b25f775616709eb0596eeeac61d8d28717f4872fef2d68fb558434ed3  public.key
 
-wget -O /etc/apt/trusted.gpg.d/proxlb.asc https://repo.gyptazy.com/repository.gpg
+wget -O /etc/apt/keyrings/proxtools-archive-keyring.gpg https://packages.credativ.com/public/proxtools/public.key
 ```
-
-*Note: The defined repositories `repo.gyptazy.com` and `repo.proxlb.de` are the same!*
-
-#### Debian Packages (.deb files)
-If you do not want to use the repository you can also find the debian packages as a .deb file on gyptazy's CDN at:
-* https://cdn.gyptazy.com/files/os/debian/proxlb/
-
-Afterwards, you can simply install the package by running:
-```bash
-dpkg -i proxlb_*.deb
-cp /etc/proxlb/proxlb_example.yaml /etc/proxlb/proxlb.yaml
-# Adjust the config to your needs
-vi /etc/proxlb/proxlb.yaml
-systemctl start proxlb
-```
-
-#### Repo Mirror and Proxmox Offline Mirror Support
-ProxLB uses the supported flat mirror style for the Debian repository. Unfortunately, not all offline-mirror applications support it. One of the known ones is the official *proxmox-offline-mirror* which is unable to handle flat repositories (see also: [#385](https://github.com/gyptazy/ProxLB/issues/385)).
-
-Therefore, we currently operate and support both ways to avoid everyone force switching to the new repository. As a result, you can simply use this repository:
-```
-deb https://repo.gyptazy.com/proxlb stable main
-```
-
-**Example Config for proxmox-offline-mirror:**
-
-An example config for the proxmox-offline-mirror would look like:
-```
-mirror: proxlb
-    architectures amd64
-    base-dir /var/lib/proxmox-offline-mirror/mirrors/
-    key-path /etc/apt/trusted.gpg.d/proxlb.asc
-    repository deb https://repo.gyptazy.com/proxlb stable main
-    sync true
-    verify true
-```
-
-### RedHat Package
-There's currently no official support for RedHat based systems. However, there's a dummy .rpm package for such systems in the pipeline which can be found here:
-* https://github.com/gyptazy/ProxLB/actions/workflows/20-pipeline-build-rpm-package.yml
-
 
 ### Container Images / Docker
 Using the ProxLB container images is straight forward and only requires you to mount the config file.
