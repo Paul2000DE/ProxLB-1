@@ -13,6 +13,8 @@ jobs:
     env:
       DEBEMAIL: "ci@credativ.de"
       DEBFULLNAME: "CI Bot"
+      DEB_VENDOR: "deb"
+      DEBCHANGE_VENDOR: "deb"
 
     steps:
     - uses: actions/checkout@v3
@@ -23,6 +25,11 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y debhelper dh-make devscripts git-buildpackage build-essential dh-python python3-all
+
+    - name: Configure generic vendor
+      run: |
+        sudo mkdir -p /etc/dpkg/origins
+        echo "Vendor: deb" | sudo tee /etc/dpkg/origins/deb
 
     - name: Configure Git for GBP
       run: |
@@ -43,7 +50,8 @@ jobs:
     - name: Update Changelog (Snapshot Only)
       if: steps.mode.outputs.snapshot == 'true' && github.event_name != 'pull_request'
       run: |
-        gbp dch --ignore-branch --snapshot --auto --git-author
+        VERSION=$(dpkg-parsechangelog -S Version)
+        gbp dch --ignore-branch --snapshot --new-version="${VERSION}credativ1" --git-author
 
     - name: Build Package
       run: |
