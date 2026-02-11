@@ -25,27 +25,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Docker Image names must be lowercase, so we need to lowercase "ProxLB"
+      - name: Repository name without owner to lowercase
+        id: lowercase
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: return `${context.repo.repo}`.toLowerCase()
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build image (no push)
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          platforms: linux/${{ matrix.arch }}
-          tags: pull-request:${{ github.sha }}-${{ matrix.arch }}
-          outputs: type=docker,dest=/tmp/${{ github.event.repository.name }}-${{ matrix.arch }}.tar
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Build image and save as tar
+        run: |
+          docker buildx build \
+            --platform linux/${{ matrix.arch }} \
+            --load \
+            -t ${{ steps.lowercase.outputs.result }}:${{ matrix.arch }} \
+            .
+          docker save ${{ steps.lowercase.outputs.result }}:${{ matrix.arch }} -o ${{ steps.lowercase.outputs.result }}_${{ matrix.arch }}.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.event.repository.name }}-${{ github.sha }}-${{ matrix.arch }}
-          path: /tmp/${{ github.event.repository.name }}-${{ matrix.arch }}.tar
-          retention-days: 7
+          name: ${{ steps.lowercase.outputs.result }}-${{ matrix.arch }}
+          path: ${{ steps.lowercase.outputs.result }}_${{ matrix.arch }}.tar
 
   release:
     if: github.event_name == 'push'
@@ -54,8 +61,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # We need to lowercase "ProxLB" to be able to push to registry
-      - name: Repository Name to lowercase
+      # Docker Image names must be lowercase, so we need to lowercase "ProxLB"
+      - name: Repository name with owner to lowercase
         id: lowercase
         uses: actions/github-script@v8
         with:
