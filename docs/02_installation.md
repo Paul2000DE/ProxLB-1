@@ -90,9 +90,11 @@ wget -O /etc/apt/keyrings/proxtools-archive-keyring.gpg https://packages.credati
 ### Container Images / Docker
 Using the ProxLB container images is straight forward and only requires you to mount the config file.
 
+Available images can be found at the GitHub [packages page](https://github.com/credativ/ProxLB/pkgs/container/proxlb).
+
 ```bash
 # Pull the image
-docker pull cr.gyptazy.com/proxlb/proxlb:latest
+docker pull ghcr.io/credativ/proxlb:latest
 # Download the config
 wget -O proxlb.yaml https://raw.githubusercontent.com/gyptazy/ProxLB/refs/heads/main/config/proxlb_example.yaml
 # Adjust the config to your needs
@@ -101,20 +103,7 @@ vi proxlb.yaml
 docker run -it --rm -v $(pwd)/proxlb.yaml:/etc/proxlb/proxlb.yaml proxlb
 ```
 
-*Note: ProxLB container images are officially only available at cr.proxlb.de and cr.gyptazy.com.* 
-
-#### Overview of Images
-| Version | Image |
-|------|:------:|
-| latest | cr.gyptazy.com/proxlb/proxlb:latest |
-| v1.1.0 | cr.gyptazy.com/proxlb/proxlb:v1.1.0 |
-| v1.0.6 | cr.gyptazy.com/proxlb/proxlb:v1.0.6 |
-| v1.0.5 | cr.gyptazy.com/proxlb/proxlb:v1.0.5 |
-| v1.0.4 | cr.gyptazy.com/proxlb/proxlb:v1.0.4 |
-| v1.0.3 | cr.gyptazy.com/proxlb/proxlb:v1.0.3 |
-| v1.0.2 | cr.gyptazy.com/proxlb/proxlb:v1.0.2 |
-| v1.0.0 | cr.gyptazy.com/proxlb/proxlb:v1.0.0 |
-| v0.9.9 | cr.gyptazy.com/proxlb/proxlb:v0.9.9 |
+*Note: ProxLB container images are officially only available at ghcr.io/credativ/proxlb*
 
 ### Source
 ProxLB can also easily be used from the provided sources - for traditional systems but also as a Docker/Podman container image.

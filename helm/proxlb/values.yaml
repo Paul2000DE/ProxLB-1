@@ -1,6 +1,6 @@
 image:
-  registry: cr.gyptazy.com
-  repository: proxlb/proxlb
+  registry: ghcr.io
+  repository: credativ/proxlb
   tag: v1.1.11
   pullPolicy: IfNotPresent
   imagePullSecrets: [ ]
