@@ -9,7 +9,7 @@ setup(
     author_email="gyptazy@gyptazy.com",
     maintainer="credativ GmbH",
     maintainer_email="support@credativ.de",
-    url="https://github.com/gyptazy/ProxLB",
+    url="https://github.com/credativ/ProxLB",
     packages=["proxlb", "proxlb.utils", "proxlb.models"],
     install_requires=[
         "packaging",
